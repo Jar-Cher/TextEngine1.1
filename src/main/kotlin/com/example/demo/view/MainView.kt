@@ -1,5 +1,6 @@
 package com.example.demo.view
 
+
 import com.example.demo.app.Styles
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
@@ -43,7 +44,6 @@ class Quest : JsonModel, ItemViewModel<Quest>() {
     var starting by startingProperty
     val finishingIdProperty = SimpleIntegerProperty(1)
     var finishingId by finishingIdProperty
-
     val slides = FXCollections.observableArrayList<Slide>(Slide())
 
     fun findWithID(id: Int): Slide {
@@ -72,13 +72,6 @@ class Quest : JsonModel, ItemViewModel<Quest>() {
         }
     }
 
-    fun getSaveSlide(): GameState = save
-
-    fun getStartingSlide(): GameState = starting
-
-    fun getFinishingID(): Int = finishingId
-
-    fun getText(i: Int): String = findWithID(i).text
 }
 
 
@@ -91,7 +84,29 @@ class GameState : JsonModel {
         with(json) {
             slideId = int("slideId") ?: 0
             gameData.clear()
-            gameData = gson.fromJson(jsonObject("gameData").toString(), gameDataMapType)
+            try {
+                gameData = gson.fromJson(jsonObject("gameData").toString(), gameDataMapType)
+            } catch (e: java.lang.ClassCastException) {
+                val gameDataString = string("gameData")
+                var status = 0
+                var key = StringBuilder()
+                var value = StringBuilder()
+                for (i in gameDataString.toString()) {
+                    if (i == '\"') {
+                        status++
+                        if (status == 4) {
+                            status = 0
+                            gameData[key.toString()] = value.toString()
+                            key = StringBuilder()
+                            value = StringBuilder()
+                        }
+                    } else
+                        when (status) {
+                            1 -> key.append(i)
+                            3 -> value.append(i)
+                        }
+                }
+            }
         }
     }
 
@@ -130,6 +145,7 @@ class Slide : JsonModel {
             add("slideId", slideId)
         }
     }
+
 }
 
 
@@ -153,7 +169,27 @@ class Option : JsonModel {
             gameData.clear()
             try {
                 gameData = gson.fromJson(jsonObject("gameData").toString(), gameDataMapType)
-            } catch (e: IllegalStateException) {
+            } catch (e: java.lang.ClassCastException) {
+                val gameDataString = string("gameData")
+                var status = 0
+                var key = StringBuilder()
+                var value = StringBuilder()
+                for (i in gameDataString.toString()) {
+                    if (i == '\"') {
+                        status++
+                        if (status == 4) {
+                            status = 0
+                            gameData[key.toString()] = value.toString()
+                            key = StringBuilder()
+                            value = StringBuilder()
+                        }
+                    } else
+                        when (status) {
+                            1 -> key.append(i)
+                            3 -> value.append(i)
+                        }
+                }
+            } catch(er: java.lang.IllegalStateException) {
 
             }
         }
@@ -247,7 +283,7 @@ class MainView : View("Text Engine") {
             }
 
             bottom {
-                buttonPanel = vbox (2) {
+                buttonPanel = vbox(2) {
 
                     translateX = 5.0
                     translateY = -5.0
@@ -382,6 +418,7 @@ class ReloadMenu : View("Reload game?") {
 
         borderpane {
             left = button("Yep") {
+                shortcut(KeyCombination.valueOf("Enter"))
                 action {
                     controller.reloadGame()
                     close()

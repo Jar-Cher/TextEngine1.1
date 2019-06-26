@@ -1,0 +1,90 @@
+{
+    "save": {
+        "slideId" : 1,
+        "gameData" : {
+            "money" : 52,
+            "positiveKarma" : true
+        }
+    },
+
+    "starting" : {
+        "slideId" : 1,
+        "gameData" : {
+                    "money" : 42,
+                    "positiveKarma" : false
+                }
+    },
+
+    "finishingId" : 4,
+
+    "slides" : [
+        {
+            "slideId" : 1,
+            "text" : "\"This is a starting slide, our current cash is $money\"",
+            "options" : [
+                {
+                    "optionId" : 1,
+                    "optionText" : "We shall proceed",
+                    "moveToSlide" : 2
+                },
+                {
+                    "optionId" : 2,
+                    "optionText" : "Lets skip one, why not?",
+                    "moveToSlide" : 3
+                },
+                {
+                    "optionId" : 3,
+                    "optionText" : "We are done here.",
+                    "moveToSlide" : 4
+                },
+                {
+                                    "optionId" : 4,
+                                    "optionText" : "Lets grind some moar.",
+                                    "moveToSlide" : 1,
+                                    "gameData" : {
+                                    "money" : "money.toInteger() + 1"
+                                    }
+                                }
+            ]
+        },
+        {
+            "slideId" : 2,
+            "text" : "\"This is not a starting slide\"",
+            "options" : [
+                        {
+                            "optionId" : 1,
+                            "optionText" : "We shall proceed.",
+                            "moveToSlide" : 3
+                        },
+                        {
+                            "optionId" : 2,
+                            "optionText" : "We are done here.",
+                            "moveToSlide" : 3
+                        },
+                        {
+                                                    "optionId" : 2,
+                                                    "optionText" : "Secret option!",
+                                                    "moveToSlide" : 2,
+                                                    "available" : "!(positiveKarma.toBoolean())"
+                                                }
+                    ]
+        },
+        {
+            "slideId" : 3,
+            "text" : "\"This is finishing slide\"",
+            "options" : [
+                {
+                    "optionId" : 1,
+                    "optionText" : "Wait, let's start again.",
+                    "moveToSlide" : 1
+                },
+                {
+                    "optionId" : 2,
+                    "optionText" : "Lets finish it already!",
+                    "moveToSlide" : 4,
+                    "available" : "money.toInteger() > 60"
+                }
+            ]
+        }
+    ]
+}
